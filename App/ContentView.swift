@@ -4,6 +4,7 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var pieces: [RepertoirePiece]
+    @AppStorage("isMaestroGuideEnabled") var isMaestroGuideEnabled: Bool = true
     
     @State private var selectedEra: MusicEra? = nil
     @State private var selectedStatus: LearningStatus? = nil
@@ -60,6 +61,11 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
+                        Button(action: {
+                            withAnimation { isMaestroGuideEnabled.toggle() }
+                        }) {
+                            Label("Guía Maestro", systemImage: "music.quarternote.3")
+                        }
                         Button(action: { isShowingStatsSheet = true }) {
                             Label("Estadísticas", systemImage: "chart.bar.xaxis")
                         }
@@ -82,6 +88,9 @@ struct ContentView: View {
                     description: Text("Elige una pieza del listado para ver sus detalles.")
                 )
             }
+        }
+        .overlay(alignment: .bottom) {
+            MaestroGuideView(isEnabled: $isMaestroGuideEnabled)
         }
         .sheet(isPresented: $isShowingAddSheet) {
             AddPieceView()
