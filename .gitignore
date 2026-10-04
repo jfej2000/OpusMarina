@@ -1,0 +1,27 @@
+# Xcode
+## User settings
+xcuserdata/
+*.xcuserstate
+
+## Build generated
+build/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# OS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# XcodeGen (Generado automáticamente)
+*.xcodeproj/
+xcodegen/
+xcodegen.zip

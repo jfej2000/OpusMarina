@@ -1,0 +1,23 @@
+name: OpusMarina
+options:
+  bundleIdPrefix: com.joseespinosa
+targets:
+  OpusMarina:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: App
+      - path: Sources
+    info:
+      path: Info.plist
+      properties:
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations: {}
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_VERSION: 5.0
+        DEVELOPMENT_TEAM: ""
