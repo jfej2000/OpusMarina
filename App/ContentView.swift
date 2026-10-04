@@ -102,6 +102,7 @@ struct PieceDetailView: View {
     @State private var isShowingSafari = false
     @State private var isShowingPDF = false
     @State private var isImportingPDF = false
+    @State private var isShowingPracticeMode = false
     @State private var safariURL: URL?
     
     var pdfURL: URL? {
@@ -117,6 +118,22 @@ struct PieceDetailView: View {
                 LabeledContent("Época", value: piece.era.rawValue)
                 LabeledContent("Estado", value: piece.status.rawValue)
                 LabeledContent("Dificultad", value: String(repeating: "★", count: piece.difficulty))
+            }
+            
+            Section("Práctica") {
+                LabeledContent("Tiempo Total", value: piece.totalPracticeTime.formattedPracticeTime)
+                
+                Button(action: { isShowingPracticeMode = true }) {
+                    Label("Iniciar Práctica", systemImage: "metronome")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.accentColor)
+                        .cornerRadius(10)
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets())
             }
             
             Section("Partitura") {
@@ -168,6 +185,9 @@ struct PieceDetailView: View {
             if let url = pdfURL {
                 ScoreViewerSheet(fileURL: url)
             }
+        })
+        .sheet(isPresented: $isShowingPracticeMode, content: {
+            PracticeModeView(piece: piece)
         })
         .fileImporter(
             isPresented: $isImportingPDF,

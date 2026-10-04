@@ -31,6 +31,7 @@ final class RepertoirePiece {
     var studyNotes: String?
     var webLink: URL?
     var pdfFileName: String?
+    var totalPracticeTime: TimeInterval = 0
     
     init(
         title: String,
@@ -52,5 +53,17 @@ final class RepertoirePiece {
         self.studyNotes = studyNotes
         self.webLink = webLink
         self.pdfFileName = pdfFileName
+    }
+}
+
+extension TimeInterval {
+    var formattedPracticeTime: String {
+        let hours = Int(self) / 3600
+        let minutes = (Int(self) % 3600) / 60
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
+        }
     }
 }
