@@ -9,6 +9,7 @@ struct ContentView: View {
     @State private var selectedStatus: LearningStatus? = nil
     @State private var isShowingAddSheet = false
     @State private var isShowingDiscoverSheet = false
+    @State private var isShowingStatsSheet = false
     @State private var selectedPiece: RepertoirePiece?
     
     var filteredPieces: [RepertoirePiece] {
@@ -59,6 +60,9 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
+                        Button(action: { isShowingStatsSheet = true }) {
+                            Label("Estadísticas", systemImage: "chart.bar.xaxis")
+                        }
                         Button(action: { isShowingDiscoverSheet = true }) {
                             Label("Descubrir", systemImage: "magnifyingglass")
                         }
@@ -84,6 +88,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingDiscoverSheet) {
             DiscoverPiecesView()
+        }
+        .sheet(isPresented: $isShowingStatsSheet) {
+            StatsView()
         }
     }
     
