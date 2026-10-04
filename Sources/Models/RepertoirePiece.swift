@@ -30,6 +30,7 @@ final class RepertoirePiece {
     var difficulty: Int
     var studyNotes: String?
     var webLink: URL?
+    var pdfFileName: String?
     
     init(
         title: String,
@@ -39,7 +40,8 @@ final class RepertoirePiece {
         status: LearningStatus = .toLearn,
         difficulty: Int = 3,
         studyNotes: String? = nil,
-        webLink: URL? = nil
+        webLink: URL? = nil,
+        pdfFileName: String? = nil
     ) {
         self.title = title
         self.composer = composer
@@ -49,5 +51,6 @@ final class RepertoirePiece {
         self.difficulty = difficulty
         self.studyNotes = studyNotes
         self.webLink = webLink
+        self.pdfFileName = pdfFileName
     }
 }

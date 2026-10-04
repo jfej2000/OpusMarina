@@ -97,7 +97,18 @@ struct ContentView: View {
 }
 
 struct PieceDetailView: View {
-    let piece: RepertoirePiece
+    @Bindable var piece: RepertoirePiece
+    
+    @State private var isShowingSafari = false
+    @State private var isShowingPDF = false
+    @State private var isImportingPDF = false
+    @State private var safariURL: URL?
+    
+    var pdfURL: URL? {
+        guard let fileName = piece.pdfFileName else { return nil }
+        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return urls.first?.appendingPathComponent(fileName)
+    }
     
     var body: some View {
         List {
@@ -108,6 +119,26 @@ struct PieceDetailView: View {
                 LabeledContent("Dificultad", value: String(repeating: "★", count: piece.difficulty))
             }
             
+            Section("Partitura") {
+                if let url = pdfURL, FileManager.default.fileExists(atPath: url.path) {
+                    Button(action: { isShowingPDF = true }) {
+                        Label("Ver Partitura (PDF)", systemImage: "doc.richtext")
+                            .font(.headline)
+                    }
+                    
+                    Button(role: .destructive, action: {
+                        try? FileManager.default.removeItem(at: url)
+                        piece.pdfFileName = nil
+                    }) {
+                        Label("Eliminar PDF", systemImage: "trash")
+                    }
+                } else {
+                    Button(action: { isImportingPDF = true }) {
+                        Label("Adjuntar PDF...", systemImage: "plus.doc")
+                    }
+                }
+            }
+            
             if let notes = piece.studyNotes, !notes.isEmpty {
                 Section("Notas de estudio") {
                     Text(notes)
@@ -116,12 +147,56 @@ struct PieceDetailView: View {
             
             if let url = piece.webLink {
                 Section("Enlaces") {
-                    Link("Abrir partitura/vídeo", destination: url)
+                    Button(action: {
+                        safariURL = url
+                        isShowingSafari = true
+                    }) {
+                        Label("Abrir enlace web", systemImage: "safari")
+                    }
                 }
             }
         }
         .navigationTitle(piece.title)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $isShowingSafari, content: {
+            if let url = safariURL {
+                SafariView(url: url)
+                    .ignoresSafeArea()
+            }
+        })
+        .sheet(isPresented: $isShowingPDF, content: {
+            if let url = pdfURL {
+                ScoreViewerSheet(fileURL: url)
+            }
+        })
+        .fileImporter(
+            isPresented: $isImportingPDF,
+            allowedContentTypes: [.pdf],
+            allowsMultipleSelection: false
+        ) { result in
+            do {
+                guard let selectedFile = try result.get().first else { return }
+                
+                if selectedFile.startAccessingSecurityScopedResource() {
+                    defer { selectedFile.stopAccessingSecurityScopedResource() }
+                    
+                    let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                    let fileName = UUID().uuidString + "-" + selectedFile.lastPathComponent
+                    let destinationURL = documentsDirectory.appendingPathComponent(fileName)
+                    
+                    try FileManager.default.copyItem(at: selectedFile, to: destinationURL)
+                    
+                    if let oldFile = piece.pdfFileName {
+                        let oldURL = documentsDirectory.appendingPathComponent(oldFile)
+                        try? FileManager.default.removeItem(at: oldURL)
+                    }
+                    
+                    piece.pdfFileName = fileName
+                }
+            } catch {
+                print("Error importing PDF: \(error)")
+            }
+        }
     }
 }
 
