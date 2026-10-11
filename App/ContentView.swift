@@ -140,42 +140,45 @@ struct ContentView: View {
             .searchable(text: $searchText, prompt: "Buscar por título, compositor, tonalidad, notas...")
             .navigationTitle("OpusMarina")
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    HStack(spacing: 8) {
-                        Menu {
-                            Picker("Ordenar por", selection: $sortOption) {
-                                ForEach(PieceSortOption.allCases) { option in
-                                    Label(option.rawValue, systemImage: option.systemImage)
-                                        .tag(option)
-                                }
-                            }
-                        } label: {
-                            Label("Ordenar", systemImage: "arrow.up.arrow.down")
-                        }
-                        .help("Ordenar repertorio")
-
-                        Button(action: {
-                            withAnimation { isMaestroGuideEnabled.toggle() }
-                        }) {
-                            Label("Guía Maestro", systemImage: "music.quarternote.3")
-                        }
-                        .help("Mostrar u ocultar guía interactiva")
-
-                        Button(action: { isShowingStatsSheet = true }) {
-                            Label("Estadísticas", systemImage: "chart.bar.xaxis")
-                        }
-                        .help("Ver estadísticas y progreso")
-
-                        Button(action: { isShowingDiscoverSheet = true }) {
-                            Label("Descubrir", systemImage: "magnifyingglass")
-                        }
-                        .help("Buscar en catálogo online")
-
-                        Button(action: { isShowingAddSheet = true }) {
-                            Label("Añadir", systemImage: "plus")
-                        }
-                        .help("Añadir nueva obra")
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        withAnimation { isMaestroGuideEnabled.toggle() }
+                    }) {
+                        Label(
+                            "Guía interactiva",
+                            systemImage: isMaestroGuideEnabled ? "graduationcap.fill" : "graduationcap"
+                        )
                     }
+                    .help("Mostrar u ocultar guía interactiva")
+                }
+                
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Ordenar por", selection: $sortOption) {
+                            ForEach(PieceSortOption.allCases) { option in
+                                Label(option.rawValue, systemImage: option.systemImage)
+                                    .tag(option)
+                            }
+                        }
+                    } label: {
+                        Label("Ordenar", systemImage: "arrow.up.arrow.down")
+                    }
+                    .help("Ordenar repertorio")
+
+                    Button(action: { isShowingDiscoverSheet = true }) {
+                        Label("Descubrir", systemImage: "magnifyingglass")
+                    }
+                    .help("Buscar en catálogo online")
+
+                    Button(action: { isShowingStatsSheet = true }) {
+                        Label("Estadísticas", systemImage: "chart.bar.xaxis")
+                    }
+                    .help("Ver estadísticas y progreso")
+
+                    Button(action: { isShowingAddSheet = true }) {
+                        Label("Añadir", systemImage: "plus")
+                    }
+                    .help("Añadir nueva obra")
                 }
             }
         } detail: {
