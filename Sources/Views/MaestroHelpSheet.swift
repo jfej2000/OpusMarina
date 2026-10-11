@@ -96,18 +96,6 @@ struct MaestroHelpSheet: View {
                                 ("Historial de tomas", "Reproduce grabaciones anteriores por fecha y hora para analizar tu evolución.")
                             ]
                         )
-
-                        HelpSectionCard(
-                            icon: "chart.bar.xaxis",
-                            iconColor: .green,
-                            title: "📊 Estadísticas y Progreso",
-                            description: "Visualiza tu crecimiento artístico:",
-                            items: [
-                                ("Tiempo acumulado", "Horas y minutos totales dedicados al piano."),
-                                ("Distribución por época", "Gráfico circular de tu repertorio entre estilos históricos."),
-                                ("Top Compositores", "Descubre a qué autores dedicas más tiempo de ensayo.")
-                            ]
-                        )
                     }
                     .padding(.horizontal)
                 }
@@ -120,7 +108,6 @@ struct MaestroHelpSheet: View {
                     Button("Cerrar") {
                         dismiss()
                     }
-                    .help("Cerrar centro de ayuda")
                 }
             }
         }

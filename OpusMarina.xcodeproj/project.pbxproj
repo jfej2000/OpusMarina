@@ -20,7 +20,6 @@
 		71FDBCA409E2C9CBA282E43C /* OpusMarinaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA2BBC782E35DB9A7CCD3DD /* OpusMarinaApp.swift */; };
 		833F2E81DAF743C3DBD82DFF /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6D78BED4400737A2D4F0BF6 /* SafariView.swift */; };
 		86F5F7206F32FB6ED8F90ACD /* RepertoirePiece.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6875B6C7A3A57901076D28FB /* RepertoirePiece.swift */; };
-		982B4E133EEF780E6139C616 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D894EEB737AD5D51B6C066F /* StatsView.swift */; };
 		9BDC1FB35ECEAE15D41C36C8 /* PDFKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59ABB6506288F19BA59B704E /* PDFKitView.swift */; };
 		9EE192320DE4E9B8FF219829 /* ScoreViewerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5429B8ED8245135A4947A8C9 /* ScoreViewerSheet.swift */; };
 		BA13B831487CB87740261DC8 /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B91840B6B278855B3F6045D /* RecordingsView.swift */; };
@@ -39,7 +38,6 @@
 		7AF4BE4037961E1948C72A4C /* PracticeModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeModeView.swift; sourceTree = "<group>"; };
 		7B91840B6B278855B3F6045D /* RecordingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsView.swift; sourceTree = "<group>"; };
 		7BDFAB1A55EBD985C46C06D2 /* MaestroGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroGuideView.swift; sourceTree = "<group>"; };
-		9D894EEB737AD5D51B6C066F /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		A621EE33B95F228E438643AF /* AudioRecorderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderService.swift; sourceTree = "<group>"; };
 		A6D78BED4400737A2D4F0BF6 /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
 		CDCBA4F2DDA2591FD3751B49 /* DiscoverPiecesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPiecesView.swift; sourceTree = "<group>"; };
@@ -62,7 +60,6 @@
 				7B91840B6B278855B3F6045D /* RecordingsView.swift */,
 				A6D78BED4400737A2D4F0BF6 /* SafariView.swift */,
 				5429B8ED8245135A4947A8C9 /* ScoreViewerSheet.swift */,
-				9D894EEB737AD5D51B6C066F /* StatsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -205,7 +202,6 @@
 				86F5F7206F32FB6ED8F90ACD /* RepertoirePiece.swift in Sources */,
 				833F2E81DAF743C3DBD82DFF /* SafariView.swift in Sources */,
 				9EE192320DE4E9B8FF219829 /* ScoreViewerSheet.swift in Sources */,
-				982B4E133EEF780E6139C616 /* StatsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

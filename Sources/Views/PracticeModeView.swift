@@ -22,7 +22,6 @@ struct PracticeModeView: View {
                                 .frame(width: 60, height: 60)
                                 .foregroundColor(isSessionActive ? .orange : .green)
                         }
-                        .help(isSessionActive ? "Pausar sesión de práctica" : "Iniciar sesión de práctica")
                         
                         Button(action: endSession) {
                             Image(systemName: "stop.circle.fill")
@@ -30,7 +29,6 @@ struct PracticeModeView: View {
                                 .frame(width: 60, height: 60)
                                 .foregroundColor(.red)
                         }
-                        .help("Finalizar sesión de práctica y guardar tiempo")
                     }
                 }
                 .padding()
@@ -55,7 +53,6 @@ struct PracticeModeView: View {
                             Image(systemName: "minus.circle")
                                 .font(.title)
                         }
-                        .help("Reducir tempo (BPM -)")
                         
                         Button(action: {
                             if metronome.isPlaying {
@@ -68,13 +65,11 @@ struct PracticeModeView: View {
                                 .font(.system(size: 40))
                                 .foregroundColor(metronome.isPlaying ? .accentColor : .primary)
                         }
-                        .help(metronome.isPlaying ? "Detener metrónomo" : "Iniciar metrónomo (Play)")
                         
                         Button(action: { metronome.bpm = min(240, metronome.bpm + 1) }) {
                             Image(systemName: "plus.circle")
                                 .font(.title)
                         }
-                        .help("Aumentar tempo (BPM +)")
                     }
                     
                     Picker("Compás", selection: $metronome.timeSignature) {
@@ -98,7 +93,6 @@ struct PracticeModeView: View {
                             .background(Color.accentColor.opacity(0.1))
                             .cornerRadius(12)
                     }
-                    .help(showingPDF ? "Ocultar partitura en PDF" : "Mostrar partitura en PDF")
                     .padding(.horizontal)
                 }
             }

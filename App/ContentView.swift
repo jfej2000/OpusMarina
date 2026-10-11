@@ -26,22 +26,15 @@ enum PieceSortOption: String, CaseIterable, Identifiable {
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var pieces: [RepertoirePiece]
-    @State private var selectedEra: MusicEra? = nil
-    @State private var selectedStatus: LearningStatus? = nil
     @State private var searchText = ""
     @State private var sortOption: PieceSortOption = .titleAsc
     @State private var isShowingAddSheet = false
     @State private var isShowingDiscoverSheet = false
-    @State private var isShowingStatsSheet = false
     @State private var isShowingHelpSheet = false
     @State private var selectedPiece: RepertoirePiece?
     
     var filteredPieces: [RepertoirePiece] {
         let filtered = pieces.filter { piece in
-            let matchesEra = (selectedEra == nil) || (piece.era == selectedEra)
-            let matchesStatus = (selectedStatus == nil) || (piece.status == selectedStatus)
-            guard matchesEra && matchesStatus else { return false }
-            
             let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
             if query.isEmpty { return true }
             
@@ -90,50 +83,32 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedPiece) {
-                Section("Filtros") {
-                    Picker("Época", selection: $selectedEra) {
-                        Text("Todas").tag(MusicEra?(nil))
-                        ForEach(MusicEra.allCases) { era in
-                            Text(era.rawValue).tag(MusicEra?(era))
-                        }
-                    }
-                    
-                    Picker("Estado", selection: $selectedStatus) {
-                        Text("Todos").tag(LearningStatus?(nil))
-                        ForEach(LearningStatus.allCases) { status in
-                            Text(status.rawValue).tag(LearningStatus?(status))
-                        }
-                    }
-                }
-                
-                Section("Repertorio (\(filteredPieces.count))") {
-                    if filteredPieces.isEmpty {
-                        Text("No hay obras que coincidan.")
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(filteredPieces) { piece in
-                            NavigationLink(value: piece) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack {
-                                        Text(piece.title).font(.headline)
-                                        if !piece.key.isEmpty {
-                                            Text("(\(piece.key))")
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
+                if filteredPieces.isEmpty {
+                    Text("No hay obras en el repertorio.")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(filteredPieces) { piece in
+                        NavigationLink(value: piece) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(piece.title).font(.headline)
+                                    if !piece.key.isEmpty {
+                                        Text("(\(piece.key))")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
                                     }
-                                    HStack {
-                                        Text(piece.composer).font(.subheadline).foregroundStyle(.secondary)
-                                        Spacer()
-                                        Text(String(repeating: "★", count: piece.difficulty))
-                                            .font(.caption2)
-                                            .foregroundStyle(.orange)
-                                    }
+                                }
+                                HStack {
+                                    Text(piece.composer).font(.subheadline).foregroundStyle(.secondary)
+                                    Spacer()
+                                    Text(String(repeating: "★", count: piece.difficulty))
+                                        .font(.caption2)
+                                        .foregroundStyle(.orange)
                                 }
                             }
                         }
-                        .onDelete(perform: deleteItems)
                     }
+                    .onDelete(perform: deleteItems)
                 }
             }
             .searchable(
@@ -143,38 +118,35 @@ struct ContentView: View {
             )
             .navigationTitle("OpusMarina")
             .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    Menu {
-                        Picker("Ordenar por", selection: $sortOption) {
-                            ForEach(PieceSortOption.allCases) { option in
-                                Label(option.rawValue, systemImage: option.systemImage)
-                                    .tag(option)
-                            }
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack(spacing: 16) {
+                        // 1. Añadir obra
+                        Button(action: { isShowingAddSheet = true }) {
+                            Image(systemName: "plus")
                         }
-                    } label: {
-                        Label("Ordenar", systemImage: "arrow.up.arrow.down")
-                    }
-                    .help("Ordenar repertorio")
 
-                    Button(action: { isShowingDiscoverSheet = true }) {
-                        Label("Descubrir online", systemImage: "globe")
-                    }
-                    .help("Explorar catálogo online (Open Opus / IMSLP)")
+                        // 2. Catálogo online
+                        Button(action: { isShowingDiscoverSheet = true }) {
+                            Image(systemName: "globe")
+                        }
 
-                    Button(action: { isShowingStatsSheet = true }) {
-                        Label("Estadísticas", systemImage: "chart.bar.xaxis")
-                    }
-                    .help("Ver estadísticas y progreso")
+                        // 3. Ordenación
+                        Menu {
+                            Picker("Ordenar por", selection: $sortOption) {
+                                ForEach(PieceSortOption.allCases) { option in
+                                    Label(option.rawValue, systemImage: option.systemImage)
+                                        .tag(option)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                        }
 
-                    Button(action: { isShowingAddSheet = true }) {
-                        Label("Añadir", systemImage: "plus")
+                        // 4. Ayuda
+                        Button(action: { isShowingHelpSheet = true }) {
+                            Image(systemName: "questionmark.circle")
+                        }
                     }
-                    .help("Añadir nueva obra")
-
-                    Button(action: { isShowingHelpSheet = true }) {
-                        Label("Ayuda", systemImage: "questionmark.circle")
-                    }
-                    .help("Centro de ayuda y guía")
                 }
             }
         } detail: {
@@ -193,9 +165,6 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingDiscoverSheet) {
             DiscoverPiecesView()
-        }
-        .sheet(isPresented: $isShowingStatsSheet) {
-            StatsView()
         }
         .sheet(isPresented: $isShowingHelpSheet) {
             MaestroHelpSheet()
@@ -250,7 +219,6 @@ struct PieceDetailView: View {
                         .background(Color.accentColor)
                         .cornerRadius(10)
                 }
-                .help("Iniciar sesión de práctica y metrónomo")
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
             }
@@ -261,7 +229,6 @@ struct PieceDetailView: View {
                         Label("Ver Partitura (PDF)", systemImage: "doc.richtext")
                             .font(.headline)
                     }
-                    .help("Ver partitura en PDF")
                     
                     Button(role: .destructive, action: {
                         try? FileManager.default.removeItem(at: url)
@@ -269,12 +236,10 @@ struct PieceDetailView: View {
                     }) {
                         Label("Eliminar PDF", systemImage: "trash")
                     }
-                    .help("Eliminar partitura PDF")
                 } else {
                     Button(action: { isImportingPDF = true }) {
                         Label("Adjuntar PDF...", systemImage: "plus.doc")
                     }
-                    .help("Adjuntar partitura en PDF")
                 }
             }
             
@@ -292,7 +257,6 @@ struct PieceDetailView: View {
                     }) {
                         Label("Abrir enlace web", systemImage: "safari")
                     }
-                    .help("Abrir enlace web de referencia")
                 }
             }
 
@@ -391,7 +355,6 @@ struct AddPieceView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancelar") { dismiss() }
-                        .help("Cancelar y cerrar")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Guardar") {
@@ -409,7 +372,6 @@ struct AddPieceView: View {
                         modelContext.insert(newPiece)
                         dismiss()
                     }
-                    .help("Guardar obra en el repertorio")
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || composer.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
