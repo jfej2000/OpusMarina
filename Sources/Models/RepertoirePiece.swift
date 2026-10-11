@@ -38,6 +38,9 @@ final class RepertoirePiece {
     var studyNotes: String?
     var webLink: URL?
     var pdfFileName: String?
+    /// Audio recordings for this piece. Cascade-delete removes files from disk in AudioRecorderService.
+    @Relationship(deleteRule: .cascade, inverse: \AudioRecording.piece)
+    var recordings: [AudioRecording]? = []
 
     // Computed helpers (not persisted) for convenience
     @Transient var era: MusicEra {

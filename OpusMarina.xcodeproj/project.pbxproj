@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0474B76336B4B4208D7FD0F9 /* MaestroCharacterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEF397888F11FC1262FFAB3 /* MaestroCharacterView.swift */; };
 		158DE7A4778990452091FDBD /* PracticeModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF4BE4037961E1948C72A4C /* PracticeModeView.swift */; };
+		232729B12D7C5FCD0A99C9CA /* AudioRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4BD399AADA6DACF9286F9A /* AudioRecording.swift */; };
+		358B2AAEF321B223D8125EC8 /* AudioRecorderService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A621EE33B95F228E438643AF /* AudioRecorderService.swift */; };
 		393089AA7C579A9C9F45BED6 /* DiscoverPiecesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA4F2DDA2591FD3751B49 /* DiscoverPiecesView.swift */; };
 		3B7AA49E9FCC429857A346C6 /* MaestroGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDFAB1A55EBD985C46C06D2 /* MaestroGuideView.swift */; };
 		4052D4388CD1A576712AF262 /* MetronomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA66783335DCA150ADFCF2C /* MetronomeService.swift */; };
@@ -20,6 +22,7 @@
 		982B4E133EEF780E6139C616 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D894EEB737AD5D51B6C066F /* StatsView.swift */; };
 		9BDC1FB35ECEAE15D41C36C8 /* PDFKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59ABB6506288F19BA59B704E /* PDFKitView.swift */; };
 		9EE192320DE4E9B8FF219829 /* ScoreViewerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5429B8ED8245135A4947A8C9 /* ScoreViewerSheet.swift */; };
+		BA13B831487CB87740261DC8 /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B91840B6B278855B3F6045D /* RecordingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,11 +34,14 @@
 		5FA2BBC782E35DB9A7CCD3DD /* OpusMarinaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpusMarinaApp.swift; sourceTree = "<group>"; };
 		6875B6C7A3A57901076D28FB /* RepertoirePiece.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepertoirePiece.swift; sourceTree = "<group>"; };
 		7AF4BE4037961E1948C72A4C /* PracticeModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeModeView.swift; sourceTree = "<group>"; };
+		7B91840B6B278855B3F6045D /* RecordingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsView.swift; sourceTree = "<group>"; };
 		7BDFAB1A55EBD985C46C06D2 /* MaestroGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroGuideView.swift; sourceTree = "<group>"; };
 		9D894EEB737AD5D51B6C066F /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		A621EE33B95F228E438643AF /* AudioRecorderService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderService.swift; sourceTree = "<group>"; };
 		A6D78BED4400737A2D4F0BF6 /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
 		CDCBA4F2DDA2591FD3751B49 /* DiscoverPiecesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPiecesView.swift; sourceTree = "<group>"; };
 		EAA66783335DCA150ADFCF2C /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
+		EB4BD399AADA6DACF9286F9A /* AudioRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecording.swift; sourceTree = "<group>"; };
 		EBBA943234D403A48E475D49 /* OpusMarina.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OpusMarina.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -48,6 +54,7 @@
 				7BDFAB1A55EBD985C46C06D2 /* MaestroGuideView.swift */,
 				59ABB6506288F19BA59B704E /* PDFKitView.swift */,
 				7AF4BE4037961E1948C72A4C /* PracticeModeView.swift */,
+				7B91840B6B278855B3F6045D /* RecordingsView.swift */,
 				A6D78BED4400737A2D4F0BF6 /* SafariView.swift */,
 				5429B8ED8245135A4947A8C9 /* ScoreViewerSheet.swift */,
 				9D894EEB737AD5D51B6C066F /* StatsView.swift */,
@@ -58,6 +65,7 @@
 		958F476D29CAF94012262651 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				EB4BD399AADA6DACF9286F9A /* AudioRecording.swift */,
 				6875B6C7A3A57901076D28FB /* RepertoirePiece.swift */,
 			);
 			path = Models;
@@ -93,6 +101,7 @@
 		C83348546D30CE77CFDFEE29 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				A621EE33B95F228E438643AF /* AudioRecorderService.swift */,
 				EAA66783335DCA150ADFCF2C /* MetronomeService.swift */,
 				095BC61B03D34DDF48A64C6C /* OpenOpusService.swift */,
 			);
@@ -162,6 +171,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				358B2AAEF321B223D8125EC8 /* AudioRecorderService.swift in Sources */,
+				232729B12D7C5FCD0A99C9CA /* AudioRecording.swift in Sources */,
 				57E601B301F0B8FAF16811E5 /* ContentView.swift in Sources */,
 				393089AA7C579A9C9F45BED6 /* DiscoverPiecesView.swift in Sources */,
 				0474B76336B4B4208D7FD0F9 /* MaestroCharacterView.swift in Sources */,
@@ -171,6 +182,7 @@
 				71FDBCA409E2C9CBA282E43C /* OpusMarinaApp.swift in Sources */,
 				9BDC1FB35ECEAE15D41C36C8 /* PDFKitView.swift in Sources */,
 				158DE7A4778990452091FDBD /* PracticeModeView.swift in Sources */,
+				BA13B831487CB87740261DC8 /* RecordingsView.swift in Sources */,
 				86F5F7206F32FB6ED8F90ACD /* RepertoirePiece.swift in Sources */,
 				833F2E81DAF743C3DBD82DFF /* SafariView.swift in Sources */,
 				9EE192320DE4E9B8FF219829 /* ScoreViewerSheet.swift in Sources */,

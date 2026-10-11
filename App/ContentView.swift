@@ -188,6 +188,9 @@ struct PieceDetailView: View {
                     }
                 }
             }
+
+            // ── Recordings ────────────────────────────────────────────
+            RecordingsView(piece: piece)
         }
         .navigationTitle(piece.title)
         .navigationBarTitleDisplayMode(.inline)

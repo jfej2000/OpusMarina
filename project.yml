@@ -19,6 +19,7 @@ targets:
         # Background Modes declared in Info.plist (complementary to entitlements)
         UIBackgroundModes:
           - remote-notification
+        NSMicrophoneUsageDescription: "OpusMarina necesita acceso al micrófono para grabar tus sesiones de práctica al piano."
     entitlements:
       path: OpusMarina.entitlements
     settings:

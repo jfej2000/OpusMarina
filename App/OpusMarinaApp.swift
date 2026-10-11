@@ -8,6 +8,7 @@ struct OpusMarinaApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             RepertoirePiece.self,
+            AudioRecording.self,
         ])
 
         // CloudKit container identifier must match the entitlements
