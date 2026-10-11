@@ -1,6 +1,28 @@
 import SwiftUI
 import SwiftData
 
+enum PieceSortOption: String, CaseIterable, Identifiable {
+    case titleAsc = "Título (A-Z)"
+    case titleDesc = "Título (Z-A)"
+    case composerAsc = "Compositor (A-Z)"
+    case difficultyAsc = "Dificultad (menor a mayor)"
+    case difficultyDesc = "Dificultad (mayor a menor)"
+    case dateLearnedDesc = "Fecha de añadido (más reciente)"
+    
+    var id: String { rawValue }
+    
+    var systemImage: String {
+        switch self {
+        case .titleAsc: return "arrow.up"
+        case .titleDesc: return "arrow.down"
+        case .composerAsc: return "person"
+        case .difficultyAsc: return "star"
+        case .difficultyDesc: return "star.fill"
+        case .dateLearnedDesc: return "calendar"
+        }
+    }
+}
+
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var pieces: [RepertoirePiece]
@@ -8,16 +30,61 @@ struct ContentView: View {
     
     @State private var selectedEra: MusicEra? = nil
     @State private var selectedStatus: LearningStatus? = nil
+    @State private var searchText = ""
+    @State private var sortOption: PieceSortOption = .titleAsc
     @State private var isShowingAddSheet = false
     @State private var isShowingDiscoverSheet = false
     @State private var isShowingStatsSheet = false
     @State private var selectedPiece: RepertoirePiece?
     
     var filteredPieces: [RepertoirePiece] {
-        pieces.filter { piece in
+        let filtered = pieces.filter { piece in
             let matchesEra = (selectedEra == nil) || (piece.era == selectedEra)
             let matchesStatus = (selectedStatus == nil) || (piece.status == selectedStatus)
-            return matchesEra && matchesStatus
+            guard matchesEra && matchesStatus else { return false }
+            
+            let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if query.isEmpty { return true }
+            
+            let words = query.split(separator: " ").map(String.init).filter { !$0.isEmpty }
+            let fields: [String] = [
+                piece.title,
+                piece.composer,
+                piece.key,
+                piece.studyNotes ?? "",
+                piece.eraRaw,
+                piece.statusRaw
+            ]
+            
+            // Coincidencia con frase completa o con cualquier palabra en cualquiera de los campos
+            let matchesFull = fields.contains { $0.localizedCaseInsensitiveContains(query) }
+            let matchesAnyWord = words.contains { word in
+                fields.contains { $0.localizedCaseInsensitiveContains(word) }
+            }
+            return matchesFull || matchesAnyWord
+        }
+        
+        return filtered.sorted { p1, p2 in
+            switch sortOption {
+            case .titleAsc:
+                return p1.title.localizedCaseInsensitiveCompare(p2.title) == .orderedAscending
+            case .titleDesc:
+                return p1.title.localizedCaseInsensitiveCompare(p2.title) == .orderedDescending
+            case .composerAsc:
+                return p1.composer.localizedCaseInsensitiveCompare(p2.composer) == .orderedAscending
+            case .difficultyAsc:
+                if p1.difficulty == p2.difficulty {
+                    return p1.title.localizedCaseInsensitiveCompare(p2.title) == .orderedAscending
+                }
+                return p1.difficulty < p2.difficulty
+            case .difficultyDesc:
+                if p1.difficulty == p2.difficulty {
+                    return p1.title.localizedCaseInsensitiveCompare(p2.title) == .orderedAscending
+                }
+                return p1.difficulty > p2.difficulty
+            case .dateLearnedDesc:
+                return p1.dateLearned > p2.dateLearned
+            }
         }
     }
     
@@ -40,16 +107,29 @@ struct ContentView: View {
                     }
                 }
                 
-                Section("Repertorio") {
+                Section("Repertorio (\(filteredPieces.count))") {
                     if filteredPieces.isEmpty {
                         Text("No hay obras que coincidan.")
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(filteredPieces) { piece in
                             NavigationLink(value: piece) {
-                                VStack(alignment: .leading) {
-                                    Text(piece.title).font(.headline)
-                                    Text(piece.composer).font(.subheadline).foregroundStyle(.secondary)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text(piece.title).font(.headline)
+                                        if !piece.key.isEmpty {
+                                            Text("(\(piece.key))")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                    HStack {
+                                        Text(piece.composer).font(.subheadline).foregroundStyle(.secondary)
+                                        Spacer()
+                                        Text(String(repeating: "★", count: piece.difficulty))
+                                            .font(.caption2)
+                                            .foregroundStyle(.orange)
+                                    }
                                 }
                             }
                         }
@@ -57,24 +137,44 @@ struct ContentView: View {
                     }
                 }
             }
+            .searchable(text: $searchText, prompt: "Buscar por título, compositor, tonalidad, notas...")
             .navigationTitle("OpusMarina")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    HStack {
+                    HStack(spacing: 8) {
+                        Menu {
+                            Picker("Ordenar por", selection: $sortOption) {
+                                ForEach(PieceSortOption.allCases) { option in
+                                    Label(option.rawValue, systemImage: option.systemImage)
+                                        .tag(option)
+                                }
+                            }
+                        } label: {
+                            Label("Ordenar", systemImage: "arrow.up.arrow.down")
+                        }
+                        .help("Ordenar repertorio")
+
                         Button(action: {
                             withAnimation { isMaestroGuideEnabled.toggle() }
                         }) {
                             Label("Guía Maestro", systemImage: "music.quarternote.3")
                         }
+                        .help("Mostrar u ocultar guía interactiva")
+
                         Button(action: { isShowingStatsSheet = true }) {
                             Label("Estadísticas", systemImage: "chart.bar.xaxis")
                         }
+                        .help("Ver estadísticas y progreso")
+
                         Button(action: { isShowingDiscoverSheet = true }) {
                             Label("Descubrir", systemImage: "magnifyingglass")
                         }
+                        .help("Buscar en catálogo online")
+
                         Button(action: { isShowingAddSheet = true }) {
                             Label("Añadir", systemImage: "plus")
                         }
+                        .help("Añadir nueva obra")
                     }
                 }
             }
@@ -131,6 +231,9 @@ struct PieceDetailView: View {
         List {
             Section("Detalles") {
                 LabeledContent("Compositor", value: piece.composer)
+                if !piece.key.isEmpty {
+                    LabeledContent("Tonalidad", value: piece.key)
+                }
                 LabeledContent("Época", value: piece.era.rawValue)
                 LabeledContent("Estado", value: piece.status.rawValue)
                 LabeledContent("Dificultad", value: String(repeating: "★", count: piece.difficulty))
@@ -148,6 +251,7 @@ struct PieceDetailView: View {
                         .background(Color.accentColor)
                         .cornerRadius(10)
                 }
+                .help("Iniciar sesión de práctica y metrónomo")
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
             }
@@ -158,6 +262,7 @@ struct PieceDetailView: View {
                         Label("Ver Partitura (PDF)", systemImage: "doc.richtext")
                             .font(.headline)
                     }
+                    .help("Ver partitura en PDF")
                     
                     Button(role: .destructive, action: {
                         try? FileManager.default.removeItem(at: url)
@@ -165,10 +270,12 @@ struct PieceDetailView: View {
                     }) {
                         Label("Eliminar PDF", systemImage: "trash")
                     }
+                    .help("Eliminar partitura PDF")
                 } else {
                     Button(action: { isImportingPDF = true }) {
                         Label("Adjuntar PDF...", systemImage: "plus.doc")
                     }
+                    .help("Adjuntar partitura en PDF")
                 }
             }
             
@@ -186,6 +293,7 @@ struct PieceDetailView: View {
                     }) {
                         Label("Abrir enlace web", systemImage: "safari")
                     }
+                    .help("Abrir enlace web de referencia")
                 }
             }
 
@@ -245,6 +353,7 @@ struct AddPieceView: View {
     
     @State private var title = ""
     @State private var composer = ""
+    @State private var key = ""
     @State private var era: MusicEra = .romantic
     @State private var status: LearningStatus = .toLearn
     @State private var difficulty = 3
@@ -257,6 +366,7 @@ struct AddPieceView: View {
                 Section("Información principal") {
                     TextField("Título", text: $title)
                     TextField("Compositor", text: $composer)
+                    TextField("Tonalidad (ej. Do menor / C minor)", text: $key)
                 }
                 
                 Section("Clasificación") {
@@ -282,6 +392,7 @@ struct AddPieceView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancelar") { dismiss() }
+                        .help("Cancelar y cerrar")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Guardar") {
@@ -289,6 +400,7 @@ struct AddPieceView: View {
                         let newPiece = RepertoirePiece(
                             title: title,
                             composer: composer,
+                            key: key,
                             era: era,
                             status: status,
                             difficulty: difficulty,
@@ -298,6 +410,7 @@ struct AddPieceView: View {
                         modelContext.insert(newPiece)
                         dismiss()
                     }
+                    .help("Guardar obra en el repertorio")
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty || composer.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }

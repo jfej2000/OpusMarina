@@ -125,6 +125,7 @@ struct StatsView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cerrar") { dismiss() }
+                        .help("Cerrar vista de estadísticas")
                 }
             }
         }

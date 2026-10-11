@@ -29,6 +29,7 @@ final class RepertoirePiece {
     // CloudKit: non-optional properties need default values
     var title: String = ""
     var composer: String = ""
+    var key: String = ""
     var dateLearned: Date = Date.now
     var eraRaw: String = MusicEra.romantic.rawValue   // Store as raw String for CloudKit compatibility
     var statusRaw: String = LearningStatus.toLearn.rawValue
@@ -56,6 +57,7 @@ final class RepertoirePiece {
     init(
         title: String = "",
         composer: String = "",
+        key: String = "",
         dateLearned: Date = .now,
         era: MusicEra = .romantic,
         status: LearningStatus = .toLearn,
@@ -66,6 +68,7 @@ final class RepertoirePiece {
     ) {
         self.title = title
         self.composer = composer
+        self.key = key
         self.dateLearned = dateLearned
         self.eraRaw = era.rawValue
         self.statusRaw = status.rawValue

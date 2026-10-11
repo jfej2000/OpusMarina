@@ -178,6 +178,7 @@ private struct RecordButton: View {
             .padding(.horizontal, 16)
         }
         .buttonStyle(.plain)
+        .help(isRecording ? "Detener grabación de ensayo" : "Iniciar grabación de ensayo al piano")
     }
 
     private func formatDuration(_ t: TimeInterval) -> String {
@@ -210,6 +211,7 @@ private struct RecordingRow: View {
                 }
             }
             .buttonStyle(.plain)
+            .help(isPlaying ? "Pausar reproducción de la toma" : "Reproducir grabación de ensayo")
 
             // Info
             VStack(alignment: .leading, spacing: 3) {

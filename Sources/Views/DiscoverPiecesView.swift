@@ -58,6 +58,7 @@ struct DiscoverPiecesView: View {
                                             Label("Añadir", systemImage: "plus.circle")
                                         }
                                     }
+                                    .help(addedPieceIDs.contains(result.id) ? "Esta obra ya está en tu repertorio" : "Añadir obra a tu repertorio local")
                                     .disabled(addedPieceIDs.contains(result.id))
                                     .buttonStyle(.borderedProminent)
                                 }
@@ -81,6 +82,7 @@ struct DiscoverPiecesView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cerrar") { dismiss() }
+                        .help("Cerrar catálogo online")
                 }
             }
         }
