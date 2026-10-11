@@ -14,24 +14,39 @@ struct OpusMarinaApp: App {
         // CloudKit container identifier must match the entitlements
         let cloudKitContainerID = "iCloud.com.joseespinosa.OpusMarina"
 
-        // Production: use CloudKit sync. Falls back gracefully if iCloud is unavailable.
-        let modelConfiguration = ModelConfiguration(
+        #if targetEnvironment(simulator)
+        // In simulator without an active Apple Developer team and logged-in iCloud account,
+        // CloudKit triggers assertions in CKContainer. Use local disk storage directly.
+        let primaryConfig = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .none
+        )
+        #else
+        let primaryConfig = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
             cloudKitDatabase: .private(cloudKitContainerID)
         )
+        #endif
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(for: schema, configurations: [primaryConfig])
         } catch {
-            // In development/simulator without a signed team, CloudKit may fail —
-            // fall back to local-only storage so the app still runs.
-            print("⚠️ CloudKit ModelContainer failed (\(error.localizedDescription)). Falling back to local storage.")
-            let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            print("⚠️ Primary ModelContainer failed: \(error.localizedDescription). Falling back to local disk storage.")
+            let localConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .none)
             do {
-                return try ModelContainer(for: schema, configurations: [fallbackConfig])
+                return try ModelContainer(for: schema, configurations: [localConfig])
             } catch {
-                fatalError("Could not create ModelContainer: \(error)")
+                print("⚠️ Local disk ModelContainer failed (schema migration / corrupt store): \(error.localizedDescription). Falling back to in-memory storage.")
+                let memoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+                do {
+                    return try ModelContainer(for: schema, configurations: [memoryConfig])
+                } catch {
+                    print("⚠️ In-memory ModelContainer failed: \(error.localizedDescription)")
+                    return (try? ModelContainer(for: schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)]))
+                        ?? (try! ModelContainer(for: schema))
+                }
             }
         }
     }()
