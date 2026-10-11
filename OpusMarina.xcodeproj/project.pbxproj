@@ -23,6 +23,7 @@
 		9BDC1FB35ECEAE15D41C36C8 /* PDFKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59ABB6506288F19BA59B704E /* PDFKitView.swift */; };
 		9EE192320DE4E9B8FF219829 /* ScoreViewerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5429B8ED8245135A4947A8C9 /* ScoreViewerSheet.swift */; };
 		BA13B831487CB87740261DC8 /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B91840B6B278855B3F6045D /* RecordingsView.swift */; };
+		D6378FC4F456DF84BAEA3546 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB90D8057975349BE6B9B571 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		CDCBA4F2DDA2591FD3751B49 /* DiscoverPiecesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPiecesView.swift; sourceTree = "<group>"; };
 		EAA66783335DCA150ADFCF2C /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
 		EB4BD399AADA6DACF9286F9A /* AudioRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecording.swift; sourceTree = "<group>"; };
+		EB90D8057975349BE6B9B571 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EBBA943234D403A48E475D49 /* OpusMarina.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OpusMarina.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -74,6 +76,7 @@
 		9A15C42E70E0CDAAE4F68D39 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				EB90D8057975349BE6B9B571 /* Assets.xcassets */,
 				958F476D29CAF94012262651 /* Models */,
 				C83348546D30CE77CFDFEE29 /* Services */,
 				54A67AEEF0D753167A8F84C2 /* Views */,
@@ -125,6 +128,7 @@
 			buildConfigurationList = 98EDFCD49153D7733FA161C5 /* Build configuration list for PBXNativeTarget "OpusMarina" */;
 			buildPhases = (
 				BA54D3C4B44F69A61EBDFF35 /* Sources */,
+				E10456D79ABCB86053C5D20E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -166,6 +170,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		E10456D79ABCB86053C5D20E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6378FC4F456DF84BAEA3546 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BA54D3C4B44F69A61EBDFF35 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -197,6 +212,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = OpusMarina.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
@@ -273,6 +289,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = OpusMarina.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "";
