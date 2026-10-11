@@ -136,7 +136,19 @@ struct ContentView: View {
                     }
                 }
             }
-            .searchable(text: $searchText, prompt: "Buscar por título, compositor, tonalidad, notas...")
+            .searchable(
+                text: $searchText,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Buscar en mi repertorio..."
+            )
+            .searchSuggestions {
+                if searchText.isEmpty {
+                    Label("Barroco", systemImage: "music.note").searchCompletion("Barroco")
+                    Label("Clasicismo", systemImage: "music.note").searchCompletion("Clasicismo")
+                    Label("Romanticismo", systemImage: "music.note").searchCompletion("Romanticismo")
+                    Label("En estudio", systemImage: "pencil.and.outline").searchCompletion("En estudio")
+                }
+            }
             .navigationTitle("OpusMarina")
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
@@ -153,9 +165,9 @@ struct ContentView: View {
                     .help("Ordenar repertorio")
 
                     Button(action: { isShowingDiscoverSheet = true }) {
-                        Label("Descubrir", systemImage: "magnifyingglass")
+                        Label("Descubrir online", systemImage: "globe")
                     }
-                    .help("Buscar en catálogo online")
+                    .help("Explorar catálogo online (Open Opus / IMSLP)")
 
                     Button(action: { isShowingStatsSheet = true }) {
                         Label("Estadísticas", systemImage: "chart.bar.xaxis")
