@@ -26,8 +26,6 @@ enum PieceSortOption: String, CaseIterable, Identifiable {
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var pieces: [RepertoirePiece]
-    @AppStorage("isMaestroGuideEnabled") var isMaestroGuideEnabled: Bool = true
-    
     @State private var selectedEra: MusicEra? = nil
     @State private var selectedStatus: LearningStatus? = nil
     @State private var searchText = ""
@@ -35,6 +33,7 @@ struct ContentView: View {
     @State private var isShowingAddSheet = false
     @State private var isShowingDiscoverSheet = false
     @State private var isShowingStatsSheet = false
+    @State private var isShowingHelpSheet = false
     @State private var selectedPiece: RepertoirePiece?
     
     var filteredPieces: [RepertoirePiece] {
@@ -140,18 +139,6 @@ struct ContentView: View {
             .searchable(text: $searchText, prompt: "Buscar por título, compositor, tonalidad, notas...")
             .navigationTitle("OpusMarina")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(action: {
-                        withAnimation { isMaestroGuideEnabled.toggle() }
-                    }) {
-                        Label(
-                            "Guía interactiva",
-                            systemImage: isMaestroGuideEnabled ? "graduationcap.fill" : "graduationcap"
-                        )
-                    }
-                    .help("Mostrar u ocultar guía interactiva")
-                }
-                
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
                         Picker("Ordenar por", selection: $sortOption) {
@@ -179,6 +166,11 @@ struct ContentView: View {
                         Label("Añadir", systemImage: "plus")
                     }
                     .help("Añadir nueva obra")
+
+                    Button(action: { isShowingHelpSheet = true }) {
+                        Label("Ayuda", systemImage: "questionmark.circle")
+                    }
+                    .help("Centro de ayuda y guía")
                 }
             }
         } detail: {
@@ -192,9 +184,6 @@ struct ContentView: View {
                 )
             }
         }
-        .overlay(alignment: .bottom) {
-            MaestroGuideView(isEnabled: $isMaestroGuideEnabled)
-        }
         .sheet(isPresented: $isShowingAddSheet) {
             AddPieceView()
         }
@@ -203,6 +192,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingStatsSheet) {
             StatsView()
+        }
+        .sheet(isPresented: $isShowingHelpSheet) {
+            MaestroHelpSheet()
         }
     }
     
