@@ -16,8 +16,25 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
           UISceneConfigurations: {}
+        # Background Modes declared in Info.plist (complementary to entitlements)
+        UIBackgroundModes:
+          - remote-notification
+    entitlements:
+      path: OpusMarina.entitlements
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_VERSION: 5.0
         DEVELOPMENT_TEAM: ""
+        # Enable CloudKit capability in build settings
+        ICLOUD_CONTAINER_ENVIRONMENT: Development
+    # XcodeGen capabilities block for iCloud + CloudKit
+    capabilities:
+      iCloud:
+        services:
+          - cloudKit
+        containers:
+          - iCloud.com.joseespinosa.OpusMarina
+      backgroundModes:
+        modes:
+          - remoteNotification

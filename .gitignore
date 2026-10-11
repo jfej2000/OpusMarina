@@ -21,7 +21,10 @@ DerivedData/
 Icon
 ._*
 
-# XcodeGen (Generado automáticamente)
-*.xcodeproj/
+# XcodeGen tools (binarios temporales, no el proyecto generado)
+# El .xcodeproj se versiona porque XcodeGen lo genera pero Xcode/CI lo necesita
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
 xcodegen/
 xcodegen.zip
+/tmp/xcodegen_tool/
