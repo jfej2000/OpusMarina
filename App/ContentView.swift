@@ -141,14 +141,6 @@ struct ContentView: View {
                 placement: .navigationBarDrawer(displayMode: .always),
                 prompt: "Buscar en mi repertorio..."
             )
-            .searchSuggestions {
-                if searchText.isEmpty {
-                    Label("Barroco", systemImage: "music.note").searchCompletion("Barroco")
-                    Label("Clasicismo", systemImage: "music.note").searchCompletion("Clasicismo")
-                    Label("Romanticismo", systemImage: "music.note").searchCompletion("Romanticismo")
-                    Label("En estudio", systemImage: "pencil.and.outline").searchCompletion("En estudio")
-                }
-            }
             .navigationTitle("OpusMarina")
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
