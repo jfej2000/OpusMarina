@@ -264,6 +264,30 @@ struct ContentView: View {
                                                 .foregroundStyle(Color(hex: folder.colorHex))
                                         }
 
+                                        Menu {
+                                            Button(role: .destructive, action: {
+                                                piece.folder = nil
+                                                try? modelContext.save()
+                                            }) {
+                                                Label("Quitar de carpeta", systemImage: "folder.badge.minus")
+                                            }
+                                            
+                                            Divider()
+                                            
+                                            ForEach(folders) { folder in
+                                                Button(action: {
+                                                    piece.folder = folder
+                                                    try? modelContext.save()
+                                                }) {
+                                                    Label(folder.name, systemImage: "folder")
+                                                }
+                                            }
+                                        } label: {
+                                            Image(systemName: "folder.badge.plus")
+                                                .foregroundColor(.blue)
+                                                .padding(4)
+                                        }
+
                                         Text(String(repeating: "★", count: piece.difficulty))
                                             .font(.caption2)
                                             .foregroundStyle(.orange)
