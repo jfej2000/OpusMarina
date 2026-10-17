@@ -115,11 +115,13 @@ struct ContentView: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    .contentShape(Rectangle())
                     .dropDestination(for: String.self) { items, _ in
                         if let uuidString = items.first,
                            let uuid = UUID(uuidString: uuidString),
                            let draggedPiece = pieces.first(where: { $0.id == uuid }) {
                             draggedPiece.folder = nil
+                            try? modelContext.save()
                             return true
                         }
                         return false
@@ -151,11 +153,13 @@ struct ContentView: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                         .dropDestination(for: String.self) { items, _ in
                             if let uuidString = items.first,
                                let uuid = UUID(uuidString: uuidString),
                                let draggedPiece = pieces.first(where: { $0.id == uuid }) {
                                 draggedPiece.folder = folder // Asigna la obra a la carpeta destino
+                                try? modelContext.save()
                                 return true
                             }
                             return false
