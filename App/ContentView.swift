@@ -115,6 +115,15 @@ struct ContentView: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    .dropDestination(for: String.self) { items, _ in
+                        if let uuidString = items.first,
+                           let uuid = UUID(uuidString: uuidString),
+                           let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                            draggedPiece.folder = nil
+                            return true
+                        }
+                        return false
+                    }
 
                     ForEach(folders) { folder in
                         Button {
@@ -142,6 +151,15 @@ struct ContentView: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .dropDestination(for: String.self) { items, _ in
+                            if let uuidString = items.first,
+                               let uuid = UUID(uuidString: uuidString),
+                               let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                                draggedPiece.folder = folder // Asigna la obra a la carpeta destino
+                                return true
+                            }
+                            return false
+                        }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
                                 if selectedFolder?.id == folder.id {
@@ -214,6 +232,7 @@ struct ContentView: View {
                                     }
                                 }
                             }
+                            .draggable(piece.id.uuidString)
                         }
                         .onDelete(perform: deleteItems)
                     }

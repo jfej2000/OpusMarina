@@ -26,6 +26,7 @@ enum LearningStatus: String, Codable, CaseIterable, Identifiable {
 // - Relationships must be optional or have defaults.
 @Model
 final class RepertoirePiece {
+    var id: UUID = UUID()
     // CloudKit: non-optional properties need default values
     var title: String = ""
     var composer: String = ""
@@ -59,6 +60,7 @@ final class RepertoirePiece {
     }
 
     init(
+        id: UUID = UUID(),
         title: String = "",
         composer: String = "",
         key: String = "",
@@ -71,6 +73,7 @@ final class RepertoirePiece {
         pdfFileName: String? = nil,
         folder: PieceFolder? = nil
     ) {
+        self.id = id
         self.title = title
         self.composer = composer
         self.key = key

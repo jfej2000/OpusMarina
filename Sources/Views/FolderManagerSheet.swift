@@ -5,9 +5,6 @@ struct FolderManagerSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @Query(sort: \PieceFolder.createdAt, order: .forward)
-    private var existingFolders: [PieceFolder]
-
     @State private var name: String = ""
     @State private var colorHex: String = PieceFolder.defaultColorHex
     @State private var customColor: Color = Color(hex: PieceFolder.defaultColorHex)
@@ -76,24 +73,6 @@ struct FolderManagerSheet: View {
                     }
                     .padding(.vertical, 6)
                 }
-
-                if !existingFolders.isEmpty {
-                    Section("Carpetas existentes") {
-                        ForEach(existingFolders) { folder in
-                            HStack(spacing: 12) {
-                                Image(systemName: "folder.fill")
-                                    .foregroundStyle(Color(hex: folder.colorHex))
-                                Text(folder.name)
-                                    .font(.body)
-                                Spacer()
-                                Text("\(folder.pieces?.count ?? 0) obras")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .onDelete(perform: deleteFolders)
-                    }
-                }
             }
             .navigationTitle("Nueva Carpeta")
             .navigationBarTitleDisplayMode(.inline)
@@ -114,13 +93,6 @@ struct FolderManagerSheet: View {
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
-        }
-    }
-
-    private func deleteFolders(offsets: IndexSet) {
-        for index in offsets {
-            let folder = existingFolders[index]
-            modelContext.delete(folder)
         }
     }
 }
