@@ -94,74 +94,70 @@ struct ContentView: View {
             List(selection: $selectedPiece) {
                 // Sección de Carpetas Personalizadas
                 Section {
-                    Button {
+                    HStack(spacing: 10) {
+                        Image(systemName: "tray.full")
+                            .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.secondary)
+                        Text("Todas las obras")
+                            .fontWeight(selectedFolder == nil ? .semibold : .regular)
+                            .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.primary)
+                        Spacer()
+                        Text("\(pieces.count)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if selectedFolder == nil {
+                            Image(systemName: "checkmark")
+                                .font(.caption.bold())
+                                .foregroundStyle(Color.accentColor)
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
                         selectedFolder = nil
-                    } label: {
+                    }
+                    .dropDestination(for: String.self) { items, _ in
+                        if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
+                           let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                            draggedPiece.folder = nil
+                            try? modelContext.save()
+                            return true
+                        }
+                        return false
+                    }
+
+                    ForEach(folders) { folder in
                         HStack(spacing: 10) {
-                            Image(systemName: "tray.full")
-                                .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.secondary)
-                            Text("Todas las obras")
-                                .fontWeight(selectedFolder == nil ? .semibold : .regular)
-                                .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.primary)
+                            Image(systemName: "folder.fill")
+                                .foregroundStyle(Color(hex: folder.colorHex))
+                            Text(folder.name)
+                                .fontWeight(selectedFolder?.id == folder.id ? .semibold : .regular)
+                                .foregroundStyle(selectedFolder?.id == folder.id ? Color.accentColor : Color.primary)
                             Spacer()
-                            Text("\(pieces.count)")
+                            Text("\(folder.pieces?.count ?? 0)")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            if selectedFolder == nil {
+                            if selectedFolder?.id == folder.id {
                                 Image(systemName: "checkmark")
                                     .font(.caption.bold())
                                     .foregroundStyle(Color.accentColor)
                             }
                         }
                         .contentShape(Rectangle())
-                        .dropDestination(for: String.self) { items, _ in
-                            if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
-                               let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                                draggedPiece.folder = nil
-                                try? modelContext.save()
-                                return true
-                            }
-                            return false
-                        }
-                    }
-                    .buttonStyle(.plain)
-
-                    ForEach(folders) { folder in
-                        Button {
+                        .onTapGesture {
                             if selectedFolder?.id == folder.id {
                                 selectedFolder = nil
                             } else {
                                 selectedFolder = folder
                             }
-                        } label: {
-                            HStack(spacing: 10) {
-                                Image(systemName: "folder.fill")
-                                    .foregroundStyle(Color(hex: folder.colorHex))
-                                Text(folder.name)
-                                    .fontWeight(selectedFolder?.id == folder.id ? .semibold : .regular)
-                                    .foregroundStyle(selectedFolder?.id == folder.id ? Color.accentColor : Color.primary)
-                                Spacer()
-                                Text("\(folder.pieces?.count ?? 0)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                if selectedFolder?.id == folder.id {
-                                    Image(systemName: "checkmark")
-                                        .font(.caption.bold())
-                                        .foregroundStyle(Color.accentColor)
-                                }
-                            }
-                            .contentShape(Rectangle())
-                            .dropDestination(for: String.self) { items, _ in
-                                if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
-                                   let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                                    draggedPiece.folder = folder
-                                    try? modelContext.save()
-                                    return true
-                                }
-                                return false
-                            }
                         }
-                        .buttonStyle(.plain)
+                        .dropDestination(for: String.self) { items, _ in
+                            if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
+                               let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                                draggedPiece.folder = folder
+                                try? modelContext.save()
+                                return true
+                            }
+                            return false
+                        }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
                                 if selectedFolder?.id == folder.id {
