@@ -315,13 +315,20 @@ struct ContentView: View {
     
     private func ensureUniquePieceIDs() {
         var seenIDs = Set<UUID>()
+        var hasDuplicates = false
         for piece in pieces {
-            if seenIDs.contains(piece.id) {
-                piece.id = UUID()
-            } else {
-                seenIDs.insert(piece.id)
+            if !seenIDs.insert(piece.id).inserted {
+                hasDuplicates = true
+                break
             }
         }
+        
+        guard hasDuplicates else { return }
+        
+        for piece in pieces {
+            piece.id = UUID()
+        }
+        try? modelContext.save()
     }
     
     private func deleteItems(offsets: IndexSet) {
