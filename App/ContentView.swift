@@ -97,25 +97,32 @@ struct ContentView: View {
                     Button {
                         selectedFolder = nil
                     } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "tray.full")
-                                .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.secondary)
-                            Text("Todas las obras")
-                                .fontWeight(selectedFolder == nil ? .semibold : .regular)
-                                .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.primary)
-                            Spacer()
-                            Text("\(pieces.count)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            if selectedFolder == nil {
-                                Image(systemName: "checkmark")
-                                    .font(.caption.bold())
-                                    .foregroundStyle(Color.accentColor)
+                        ZStack(alignment: .leading) {
+                            Color.clear
+                                .frame(maxWidth: .infinity)
+                                .contentShape(Rectangle())
+
+                            HStack(spacing: 10) {
+                                Image(systemName: "tray.full")
+                                    .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.secondary)
+                                Text("Todas las obras")
+                                    .fontWeight(selectedFolder == nil ? .semibold : .regular)
+                                    .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.primary)
+                                Spacer()
+                                Text("\(pieces.count)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                if selectedFolder == nil {
+                                    Image(systemName: "checkmark")
+                                        .font(.caption.bold())
+                                        .foregroundStyle(Color.accentColor)
+                                }
                             }
                         }
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .contentShape(Rectangle())
                     .dropDestination(for: String.self) { items, _ in
                         if let uuidString = items.first,
                            let uuid = UUID(uuidString: uuidString),
@@ -135,12 +142,17 @@ struct ContentView: View {
                                 selectedFolder = folder
                             }
                         } label: {
-                            HStack(spacing: 10) {
-                                Image(systemName: "folder.fill")
-                                    .foregroundStyle(Color(hex: folder.colorHex))
-                                Text(folder.name)
-                                    .fontWeight(selectedFolder?.id == folder.id ? .semibold : .regular)
-                                    .foregroundStyle(selectedFolder?.id == folder.id ? Color.accentColor : Color.primary)
+                            ZStack(alignment: .leading) {
+                                Color.clear
+                                    .frame(maxWidth: .infinity)
+                                    .contentShape(Rectangle())
+
+                                HStack(spacing: 10) {
+                                    Image(systemName: "folder.fill")
+                                        .foregroundStyle(Color(hex: folder.colorHex))
+                                    Text(folder.name)
+                                        .fontWeight(selectedFolder?.id == folder.id ? .semibold : .regular)
+                                        .foregroundStyle(selectedFolder?.id == folder.id ? Color.accentColor : Color.primary)
                                 Spacer()
                                 Text("\(folder.pieces?.count ?? 0)")
                                     .font(.caption)
@@ -152,18 +164,20 @@ struct ContentView: View {
                                 }
                             }
                         }
-                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity)
                         .contentShape(Rectangle())
-                        .dropDestination(for: String.self) { items, _ in
-                            if let uuidString = items.first,
-                               let uuid = UUID(uuidString: uuidString),
-                               let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                                draggedPiece.folder = folder // Asigna la obra a la carpeta destino
-                                try? modelContext.save()
-                                return true
-                            }
-                            return false
+                    }
+                    .buttonStyle(.plain)
+                    .dropDestination(for: String.self) { items, _ in
+                        if let uuidString = items.first,
+                           let uuid = UUID(uuidString: uuidString),
+                           let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                            draggedPiece.folder = folder // Asigna la obra a la carpeta destino
+                            try? modelContext.save()
+                            return true
                         }
+                        return false
+                    }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
                                 if selectedFolder?.id == folder.id {
