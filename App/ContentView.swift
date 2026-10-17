@@ -26,15 +26,24 @@ enum PieceSortOption: String, CaseIterable, Identifiable {
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var pieces: [RepertoirePiece]
+    @Query(sort: \PieceFolder.createdAt, order: .forward) private var folders: [PieceFolder]
     @State private var searchText = ""
     @State private var sortOption: PieceSortOption = .titleAsc
     @State private var isShowingAddSheet = false
     @State private var isShowingDiscoverSheet = false
     @State private var isShowingHelpSheet = false
+    @State private var isShowingFolderSheet = false
+    @State private var selectedFolder: PieceFolder? = nil
     @State private var selectedPiece: RepertoirePiece?
     
     var filteredPieces: [RepertoirePiece] {
         let filtered = pieces.filter { piece in
+            if let selectedFolder = selectedFolder {
+                if piece.folder?.id != selectedFolder.id {
+                    return false
+                }
+            }
+
             let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
             if query.isEmpty { return true }
             
@@ -83,32 +92,131 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedPiece) {
-                if filteredPieces.isEmpty {
-                    Text("No hay obras en el repertorio.")
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(filteredPieces) { piece in
-                        NavigationLink(value: piece) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text(piece.title).font(.headline)
-                                    if !piece.key.isEmpty {
-                                        Text("(\(piece.key))")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-                                HStack {
-                                    Text(piece.composer).font(.subheadline).foregroundStyle(.secondary)
-                                    Spacer()
-                                    Text(String(repeating: "★", count: piece.difficulty))
-                                        .font(.caption2)
-                                        .foregroundStyle(.orange)
-                                }
+                // Sección de Carpetas Personalizadas
+                Section {
+                    Button {
+                        selectedFolder = nil
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "tray.full")
+                                .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.secondary)
+                            Text("Todas las obras")
+                                .fontWeight(selectedFolder == nil ? .semibold : .regular)
+                                .foregroundStyle(selectedFolder == nil ? Color.accentColor : Color.primary)
+                            Spacer()
+                            Text("\(pieces.count)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if selectedFolder == nil {
+                                Image(systemName: "checkmark")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(Color.accentColor)
                             }
                         }
                     }
-                    .onDelete(perform: deleteItems)
+                    .buttonStyle(.plain)
+
+                    ForEach(folders) { folder in
+                        Button {
+                            if selectedFolder?.id == folder.id {
+                                selectedFolder = nil
+                            } else {
+                                selectedFolder = folder
+                            }
+                        } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: "folder.fill")
+                                    .foregroundStyle(Color(hex: folder.colorHex))
+                                Text(folder.name)
+                                    .fontWeight(selectedFolder?.id == folder.id ? .semibold : .regular)
+                                    .foregroundStyle(selectedFolder?.id == folder.id ? Color.accentColor : Color.primary)
+                                Spacer()
+                                Text("\(folder.pieces?.count ?? 0)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                if selectedFolder?.id == folder.id {
+                                    Image(systemName: "checkmark")
+                                        .font(.caption.bold())
+                                        .foregroundStyle(Color.accentColor)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                if selectedFolder?.id == folder.id {
+                                    selectedFolder = nil
+                                }
+                                modelContext.delete(folder)
+                            } label: {
+                                Label("Eliminar", systemImage: "trash")
+                            }
+                        }
+                    }
+
+                    if folders.isEmpty {
+                        Button(action: { isShowingFolderSheet = true }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "folder.badge.plus")
+                                    .foregroundStyle(.secondary)
+                                Text("Crear carpeta...")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } header: {
+                    HStack {
+                        Text("Mis Carpetas")
+                        Spacer()
+                        Button(action: { isShowingFolderSheet = true }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "plus")
+                                Text("Nueva")
+                            }
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.accentColor)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                // Sección del Listado de Obras
+                Section(selectedFolder != nil ? "Obras en \(selectedFolder!.name)" : "Repertorio") {
+                    if filteredPieces.isEmpty {
+                        Text(selectedFolder != nil ? "No hay obras en esta carpeta." : "No hay obras en el repertorio.")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(filteredPieces) { piece in
+                            NavigationLink(value: piece) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text(piece.title).font(.headline)
+                                        if !piece.key.isEmpty {
+                                            Text("(\(piece.key))")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        if let folder = piece.folder, selectedFolder == nil {
+                                            Spacer()
+                                            Image(systemName: "folder.fill")
+                                                .font(.caption2)
+                                                .foregroundStyle(Color(hex: folder.colorHex))
+                                        }
+                                    }
+                                    HStack {
+                                        Text(piece.composer).font(.subheadline).foregroundStyle(.secondary)
+                                        Spacer()
+                                        Text(String(repeating: "★", count: piece.difficulty))
+                                            .font(.caption2)
+                                            .foregroundStyle(.orange)
+                                    }
+                                }
+                            }
+                        }
+                        .onDelete(perform: deleteItems)
+                    }
                 }
             }
             .searchable(
@@ -161,13 +269,16 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isShowingAddSheet) {
-            AddPieceView()
+            AddPieceView(initialFolder: selectedFolder)
         }
         .sheet(isPresented: $isShowingDiscoverSheet) {
             DiscoverPiecesView()
         }
         .sheet(isPresented: $isShowingHelpSheet) {
             MaestroHelpSheet()
+        }
+        .sheet(isPresented: $isShowingFolderSheet) {
+            FolderManagerSheet()
         }
     }
     
@@ -182,6 +293,7 @@ struct ContentView: View {
 
 struct PieceDetailView: View {
     @Bindable var piece: RepertoirePiece
+    @Query(sort: \PieceFolder.createdAt, order: .forward) private var folders: [PieceFolder]
     
     @State private var isShowingSafari = false
     @State private var isShowingPDF = false
@@ -205,6 +317,18 @@ struct PieceDetailView: View {
                 LabeledContent("Época", value: piece.era.rawValue)
                 LabeledContent("Estado", value: piece.status.rawValue)
                 LabeledContent("Dificultad", value: String(repeating: "★", count: piece.difficulty))
+
+                Picker("Carpeta", selection: $piece.folder) {
+                    Text("Ninguna").tag(nil as PieceFolder?)
+                    ForEach(folders) { folder in
+                        HStack(spacing: 8) {
+                            Image(systemName: "folder.fill")
+                                .foregroundStyle(Color(hex: folder.colorHex))
+                            Text(folder.name)
+                        }
+                        .tag(folder as PieceFolder?)
+                    }
+                }
             }
             
             Section("Práctica") {
@@ -314,6 +438,10 @@ struct AddPieceView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    @Query(sort: \PieceFolder.createdAt, order: .forward) private var folders: [PieceFolder]
+    
+    var initialFolder: PieceFolder? = nil
+    
     @State private var title = ""
     @State private var composer = ""
     @State private var key = ""
@@ -322,6 +450,12 @@ struct AddPieceView: View {
     @State private var difficulty = 3
     @State private var studyNotes = ""
     @State private var webLinkString = ""
+    @State private var selectedFolder: PieceFolder?
+    
+    init(initialFolder: PieceFolder? = nil) {
+        self.initialFolder = initialFolder
+        _selectedFolder = State(initialValue: initialFolder)
+    }
     
     var body: some View {
         NavigationStack {
@@ -333,6 +467,17 @@ struct AddPieceView: View {
                 }
                 
                 Section("Clasificación") {
+                    Picker("Carpeta", selection: $selectedFolder) {
+                        Text("Ninguna").tag(nil as PieceFolder?)
+                        ForEach(folders) { folder in
+                            HStack(spacing: 8) {
+                                Image(systemName: "folder.fill")
+                                    .foregroundStyle(Color(hex: folder.colorHex))
+                                Text(folder.name)
+                            }
+                            .tag(folder as PieceFolder?)
+                        }
+                    }
                     Picker("Época musical", selection: $era) {
                         ForEach(MusicEra.allCases) { Text($0.rawValue).tag($0) }
                     }
@@ -367,7 +512,8 @@ struct AddPieceView: View {
                             status: status,
                             difficulty: difficulty,
                             studyNotes: studyNotes.isEmpty ? nil : studyNotes,
-                            webLink: url
+                            webLink: url,
+                            folder: selectedFolder
                         )
                         modelContext.insert(newPiece)
                         dismiss()
@@ -381,5 +527,5 @@ struct AddPieceView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: RepertoirePiece.self, inMemory: true)
+        .modelContainer(for: [RepertoirePiece.self, PieceFolder.self], inMemory: true)
 }

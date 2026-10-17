@@ -9,6 +9,7 @@ struct OpusMarinaApp: App {
         let schema = Schema([
             RepertoirePiece.self,
             AudioRecording.self,
+            PieceFolder.self,
         ])
 
         // CloudKit container identifier must match the entitlements

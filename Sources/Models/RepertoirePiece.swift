@@ -43,6 +43,10 @@ final class RepertoirePiece {
     @Relationship(deleteRule: .cascade, inverse: \AudioRecording.piece)
     var recordings: [AudioRecording]? = []
 
+    /// Optional folder assignment for organizing pieces.
+    @Relationship(inverse: \PieceFolder.pieces)
+    var folder: PieceFolder?
+
     // Computed helpers (not persisted) for convenience
     @Transient var era: MusicEra {
         get { MusicEra(rawValue: eraRaw) ?? .romantic }
@@ -64,7 +68,8 @@ final class RepertoirePiece {
         difficulty: Int = 3,
         studyNotes: String? = nil,
         webLink: URL? = nil,
-        pdfFileName: String? = nil
+        pdfFileName: String? = nil,
+        folder: PieceFolder? = nil
     ) {
         self.title = title
         self.composer = composer
@@ -76,6 +81,7 @@ final class RepertoirePiece {
         self.studyNotes = studyNotes
         self.webLink = webLink
         self.pdfFileName = pdfFileName
+        self.folder = folder
     }
 }
 
