@@ -98,7 +98,7 @@ struct ContentView: View {
                         selectedFolder = nil
                     } label: {
                         ZStack(alignment: .leading) {
-                            Color.clear
+                            Color.black.opacity(0.001)
                                 .frame(maxWidth: .infinity)
                                 .contentShape(Rectangle())
 
@@ -123,6 +123,7 @@ struct ContentView: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .contentShape(Rectangle())
                     .dropDestination(for: String.self) { items, _ in
                         if let uuidString = items.first,
                            let uuid = UUID(uuidString: uuidString),
@@ -143,7 +144,7 @@ struct ContentView: View {
                             }
                         } label: {
                             ZStack(alignment: .leading) {
-                                Color.clear
+                                Color.black.opacity(0.001)
                                     .frame(maxWidth: .infinity)
                                     .contentShape(Rectangle())
 
@@ -153,31 +154,32 @@ struct ContentView: View {
                                     Text(folder.name)
                                         .fontWeight(selectedFolder?.id == folder.id ? .semibold : .regular)
                                         .foregroundStyle(selectedFolder?.id == folder.id ? Color.accentColor : Color.primary)
-                                Spacer()
-                                Text("\(folder.pieces?.count ?? 0)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                if selectedFolder?.id == folder.id {
-                                    Image(systemName: "checkmark")
-                                        .font(.caption.bold())
-                                        .foregroundStyle(Color.accentColor)
+                                    Spacer()
+                                    Text("\(folder.pieces?.count ?? 0)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    if selectedFolder?.id == folder.id {
+                                        Image(systemName: "checkmark")
+                                            .font(.caption.bold())
+                                            .foregroundStyle(Color.accentColor)
+                                    }
                                 }
                             }
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
                         }
-                        .frame(maxWidth: .infinity)
+                        .buttonStyle(.plain)
                         .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .dropDestination(for: String.self) { items, _ in
-                        if let uuidString = items.first,
-                           let uuid = UUID(uuidString: uuidString),
-                           let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                            draggedPiece.folder = folder // Asigna la obra a la carpeta destino
-                            try? modelContext.save()
-                            return true
+                        .dropDestination(for: String.self) { items, _ in
+                            if let uuidString = items.first,
+                               let uuid = UUID(uuidString: uuidString),
+                               let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                                draggedPiece.folder = folder // Asigna la obra a la carpeta destino
+                                try? modelContext.save()
+                                return true
+                            }
+                            return false
                         }
-                        return false
-                    }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
                                 if selectedFolder?.id == folder.id {
