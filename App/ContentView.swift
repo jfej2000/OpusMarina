@@ -113,20 +113,18 @@ struct ContentView: View {
                                     .foregroundStyle(Color.accentColor)
                             }
                         }
+                        .contentShape(Rectangle())
+                        .dropDestination(for: String.self) { items, _ in
+                            if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
+                               let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                                draggedPiece.folder = nil
+                                try? modelContext.save()
+                                return true
+                            }
+                            return false
+                        }
                     }
                     .buttonStyle(.plain)
-                    .overlay(
-                        Color.white.opacity(0.001)
-                            .dropDestination(for: String.self) { items, _ in
-                                if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
-                                   let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                                    draggedPiece.folder = nil
-                                    try? modelContext.save()
-                                    return true
-                                }
-                                return false
-                            }
-                    )
 
                     ForEach(folders) { folder in
                         Button {
@@ -152,20 +150,18 @@ struct ContentView: View {
                                         .foregroundStyle(Color.accentColor)
                                 }
                             }
+                            .contentShape(Rectangle())
+                            .dropDestination(for: String.self) { items, _ in
+                                if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
+                                   let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                                    draggedPiece.folder = folder
+                                    try? modelContext.save()
+                                    return true
+                                }
+                                return false
+                            }
                         }
                         .buttonStyle(.plain)
-                        .overlay(
-                            Color.white.opacity(0.001)
-                                .dropDestination(for: String.self) { items, _ in
-                                    if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
-                                       let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                                        draggedPiece.folder = folder
-                                        try? modelContext.save()
-                                        return true
-                                    }
-                                    return false
-                                }
-                        )
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
                                 if selectedFolder?.id == folder.id {
