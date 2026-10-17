@@ -201,31 +201,40 @@ struct ContentView: View {
                 }
 
                 // Sección del Listado de Obras
-                Section(selectedFolder != nil ? "Obras en \(selectedFolder!.name)" : "Repertorio") {
+                Section(header: Text(selectedFolder != nil ? "Obras en \(selectedFolder!.name)" : "Repertorio")) {
                     if filteredPieces.isEmpty {
                         Text(selectedFolder != nil ? "No hay obras en esta carpeta." : "No hay obras en el repertorio.")
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(filteredPieces) { piece in
                             NavigationLink(value: piece) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack {
-                                        Text(piece.title).font(.headline)
-                                        if !piece.key.isEmpty {
-                                            Text("(\(piece.key))")
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
+                                HStack(alignment: .center, spacing: 8) {
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        HStack(spacing: 6) {
+                                            Text(piece.title)
+                                                .font(.headline)
+                                                .lineLimit(1)
+                                            if !piece.key.isEmpty {
+                                                Text("(\(piece.key))")
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                            }
                                         }
+                                        Text(piece.composer)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(1)
+                                    }
+
+                                    Spacer()
+
+                                    HStack(spacing: 6) {
                                         if let folder = piece.folder, selectedFolder == nil {
-                                            Spacer()
                                             Image(systemName: "folder.fill")
-                                                .font(.caption2)
+                                                .font(.caption)
                                                 .foregroundStyle(Color(hex: folder.colorHex))
                                         }
-                                    }
-                                    HStack {
-                                        Text(piece.composer).font(.subheadline).foregroundStyle(.secondary)
-                                        Spacer()
+
                                         Text(String(repeating: "★", count: piece.difficulty))
                                             .font(.caption2)
                                             .foregroundStyle(.orange)
@@ -298,6 +307,20 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isShowingFolderSheet) {
             FolderManagerSheet()
+        }
+        .onAppear {
+            ensureUniquePieceIDs()
+        }
+    }
+    
+    private func ensureUniquePieceIDs() {
+        var seenIDs = Set<UUID>()
+        for piece in pieces {
+            if seenIDs.contains(piece.id) {
+                piece.id = UUID()
+            } else {
+                seenIDs.insert(piece.id)
+            }
         }
     }
     
