@@ -99,3 +99,14 @@ extension TimeInterval {
         }
     }
 }
+
+import CoreTransferable
+
+// Conformidad Transferable para permitir arrastrar la obra o su ID
+extension RepertoirePiece: Transferable {
+    public static var transferRepresentation: some TransferRepresentation {
+        ProxyRepresentation(exporting: \.id.uuidString)
+    }
+}
+
+

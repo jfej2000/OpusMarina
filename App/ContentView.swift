@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 enum PieceSortOption: String, CaseIterable, Identifiable {
     case titleAsc = "Título (A-Z)"
@@ -114,14 +115,29 @@ struct ContentView: View {
                     .onTapGesture {
                         selectedFolder = nil
                     }
-                    .dropDestination(for: String.self) { items, _ in
-                        if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
-                           let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                            draggedPiece.folder = nil
-                            try? modelContext.save()
-                            return true
+                    .onDrop(of: [.plainText], isTargeted: nil) { providers in
+                        guard let provider = providers.first else { return false }
+                        provider.loadItem(forTypeIdentifier: "public.plain-text", options: nil) { item, error in
+                            let uuidString: String? = {
+                                if let data = item as? Data {
+                                    return String(data: data, encoding: .utf8)
+                                } else if let str = item as? String {
+                                    return str
+                                } else if let nsStr = item as? NSString {
+                                    return nsStr as String
+                                }
+                                return nil
+                            }()
+                            guard let uuidString, let uuid = UUID(uuidString: uuidString) else { return }
+                            
+                            DispatchQueue.main.async {
+                                if let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                                    draggedPiece.folder = nil
+                                    try? modelContext.save()
+                                }
+                            }
                         }
-                        return false
+                        return true
                     }
 
                     ForEach(folders) { folder in
@@ -149,14 +165,29 @@ struct ContentView: View {
                                 selectedFolder = folder
                             }
                         }
-                        .dropDestination(for: String.self) { items, _ in
-                            if let uuidString = items.first, let uuid = UUID(uuidString: uuidString),
-                               let draggedPiece = pieces.first(where: { $0.id == uuid }) {
-                                draggedPiece.folder = folder
-                                try? modelContext.save()
-                                return true
+                        .onDrop(of: [.plainText], isTargeted: nil) { providers in
+                            guard let provider = providers.first else { return false }
+                            provider.loadItem(forTypeIdentifier: "public.plain-text", options: nil) { item, error in
+                                let uuidString: String? = {
+                                    if let data = item as? Data {
+                                        return String(data: data, encoding: .utf8)
+                                    } else if let str = item as? String {
+                                        return str
+                                    } else if let nsStr = item as? NSString {
+                                        return nsStr as String
+                                    }
+                                    return nil
+                                }()
+                                guard let uuidString, let uuid = UUID(uuidString: uuidString) else { return }
+                                
+                                DispatchQueue.main.async {
+                                    if let draggedPiece = pieces.first(where: { $0.id == uuid }) {
+                                        draggedPiece.folder = folder
+                                        try? modelContext.save()
+                                    }
+                                }
                             }
-                            return false
+                            return true
                         }
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
@@ -239,7 +270,9 @@ struct ContentView: View {
                                     }
                                 }
                             }
-                            .draggable(piece.id.uuidString)
+                            .onDrag {
+                                NSItemProvider(object: piece.id.uuidString as NSString)
+                            }
                         }
                         .onDelete(perform: deleteItems)
                     }
